@@ -1,14 +1,24 @@
 import React from 'react';
+import { useState } from 'react';
 import ReactDOM from 'react-dom'
 console.log(React);
 console.log(ReactDOM);
-const jsx=(
-  <div>
-  <span>123</span>
-  </div>
-)
+debugger
+function App() {
+  const [num]=useState(100)
+  
+	return (
+		<div>
+			{num}
+		</div>
+	);
+}
+
+// function Child() {
+// 	return <span>big-react</span>;
+// }
   
 
 const root =document.querySelector("#root")
 
-ReactDOM.createRoot(root).render(jsx)
+ReactDOM.createRoot(root).render(<App/>)

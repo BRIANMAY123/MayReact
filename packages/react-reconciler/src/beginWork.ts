@@ -8,6 +8,7 @@ import {
 	HostText
 } from './workTags';
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
+import { renderWithHooks } from './fiberHooks';
 
 export const beginWork = (wip: FiberNode) => {
 	switch (wip.tag) {
@@ -17,8 +18,8 @@ export const beginWork = (wip: FiberNode) => {
 			return updateHostComponent(wip);
 		case HostText:
 			return null;
-		// case FunctionComponent:
-		// 	return updateFunctionComponent(wip);
+		case FunctionComponent:
+			return updateFunctionComponent(wip);
 
 		default:
 			if (__DEV__) {
@@ -50,7 +51,11 @@ function updateHostComponent(wip: FiberNode) {
 	return wip.child;
 }
 
-function updateFunctionComponent(wip: FiberNode) {}
+function updateFunctionComponent(wip: FiberNode) {
+	const nextChildren=renderWithHooks(wip);
+	reconcileChildren(wip,nextChildren);
+	return wip.child
+}
 
 function reconcileChildren(wip: FiberNode, children?: ReactElementType) {
 	const current = wip.alternate;

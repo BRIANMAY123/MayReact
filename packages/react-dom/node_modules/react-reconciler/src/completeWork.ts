@@ -6,7 +6,7 @@ import {
 } from 'hostConfig';
 import { FiberNode } from './fiber';
 import { NoFlags } from './fiberFlags';
-import { HostComponent, HostRoot, HostText } from './workTags';
+import { FunctionComponent, HostComponent, HostRoot, HostText } from './workTags';
 
 export const completeWork = (wip: FiberNode) => {
 	const newProps = wip.pendingProps;
@@ -36,6 +36,9 @@ export const completeWork = (wip: FiberNode) => {
 		case HostRoot:
 			bubbleProperties(wip);
 			return null;
+		case FunctionComponent:
+			bubbleProperties(wip);
+			return null
 
 		default:
 			if (__DEV__) {
@@ -56,7 +59,6 @@ function bubbleProperties(wip: FiberNode) {
 	}
 	wip.subtreeFlags |= subtreeFlags;
 }
-
 //递归的插子dom树，流程为深度遍历
 function appendAllChildren(parent: Container, wip: FiberNode) {
 	let node = wip.child;
