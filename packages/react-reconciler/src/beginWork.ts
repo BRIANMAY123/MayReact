@@ -52,9 +52,9 @@ function updateHostComponent(wip: FiberNode) {
 }
 
 function updateFunctionComponent(wip: FiberNode) {
-	const nextChildren=renderWithHooks(wip);
-	reconcileChildren(wip,nextChildren);
-	return wip.child
+	const nextChildren = renderWithHooks(wip);
+	reconcileChildren(wip, nextChildren);
+	return wip.child;
 }
 
 function reconcileChildren(wip: FiberNode, children?: ReactElementType) {

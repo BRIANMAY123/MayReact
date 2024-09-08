@@ -46,6 +46,8 @@ export class FiberNode {
 
 	//与 Fiber 节点相关的更新队列。用于存储需要应用到 Fiber 的更新，例如 state 更新。这通常是一个待处理的更新集合。
 	updateQueue: unknown;
+
+	deletions:FiberNode[] | null;
 	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		//实例属性
 		this.tag = tag;
@@ -75,6 +77,7 @@ export class FiberNode {
 		//副作用
 		this.flags = NoFlags;
 		this.subtreeFlags = NoFlags;
+		this.deletions = null;
 	}
 }
 
@@ -93,7 +96,7 @@ export class FiberRootNode {
 	}
 }
 
-//创建workInProgress,目前不是很懂
+//创建workInProgress
 export const createWorkInProgress = (
 	current: FiberNode,
 	pendingProps: Props
@@ -102,15 +105,17 @@ export const createWorkInProgress = (
 	if (wip === null) {
 		//mount
 		wip = new FiberNode(current.tag, pendingProps, current.key);
-		wip.tag = current.tag;
 		wip.stateNode = current.stateNode;
 
-		current.alternate = wip;
+		
 		wip.alternate = current;
+		current.alternate = wip;
 	} else {
 		//update
 		wip.pendingProps = pendingProps;
 		wip.flags = NoFlags;
+		wip.subtreeFlags = NoFlags;
+		wip.deletions = null;
 	}
 	wip.type = current.type;
 	wip.updateQueue = current.updateQueue;

@@ -34,14 +34,14 @@ export const enqueueUpdate = <State>(
 	updateQueue: UpdateQueue<State>,
 	update: Update<State>
 ) => {
-	const pedding = updateQueue.shared.pending;
-	//当有新更新插入时，它会被插入到队列的末尾。由于队列是环状的，新更新的 next 指向队列的第一个更新，而队列中最后一个更新的 next 更新为新插入的更新，形成一个闭环。这样，队列的循环结构得以维持。
-	if (pedding === null) {
-		update.next = update;
-	} else {
-		update.next = pedding.next;
-		pedding.next = update;
-	}
+	// const pedding = updateQueue.shared.pending;
+	// //当有新更新插入时，它会被插入到队列的末尾。由于队列是环状的，新更新的 next 指向队列的第一个更新，而队列中最后一个更新的 next 更新为新插入的更新，形成一个闭环。这样，队列的循环结构得以维持。
+	// if (pedding === null) {
+	// 	update.next = update;
+	// } else {
+	// 	update.next = pedding.next;
+	// 	pedding.next = update;
+	// }
 	updateQueue.shared.pending = update;
 };
 
