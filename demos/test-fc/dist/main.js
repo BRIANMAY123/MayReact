@@ -9,28 +9,33 @@ function App() {
     // 	debugger
     var _a = react_2.useState(100), num = _a[0], setNum = _a[1];
     //debugger
-    //setNum(()=>101)
+    //setNum((num) => num + 1)
     //   setTimeout(() => {
     // 	setNum(num+1)
     //   }, 1000);
-    var arr = num % 2 === 0
-        ? [react_1["default"].createElement("li", { key: "1" }, "1"), react_1["default"].createElement("li", { key: "2" }, "2"), react_1["default"].createElement("li", { key: "3" }, "3")]
-        : [react_1["default"].createElement("li", { key: "3" }, "3"), react_1["default"].createElement("li", { key: "2" }, "2"), react_1["default"].createElement("li", { key: "1" }, "1")];
+    //   const arr =
+    // 		num % 2 === 0
+    // 			? [<li key="1">1</li>, <li key="2">2</li>, <li key="3">3</li>]
+    // 			: [<li key="3">3</li>, <li key="2">2</li>, <li key="1">1</li>];
     //       return <ul onClick={() => setNum(num + 1)}>{arr}</ul>;
-    // return (
-    // 	<div onClick={()=>setNum(num+1)}>
-    // 		{num}
-    // 	</div>
-    // );
+    return (react_1["default"].createElement("ul", { onClickCapture: function () {
+            setNum(function (num) { return num + 1; });
+            setNum(function (num) { return num + 1; });
+            setNum(function (num) { return num + 1; });
+        } }, num));
     // return(<>
     // <div>11</div>
     // <div>22</div>
     // </>)
-    return (react_1["default"].createElement("div", null,
-        react_1["default"].createElement(react_1["default"].Fragment, null,
-            react_1["default"].createElement("div", null, "1"),
-            react_1["default"].createElement("div", null, "2")),
-        arr));
+    // return(
+    // 	<div>
+    // 		<>
+    // 		<div>1</div>
+    // 		<div>2</div>
+    // 		</>
+    // 		{arr}
+    // 	</div>
+    // )
 }
 // function Child() {
 // 	return <span>big-react</span>;
