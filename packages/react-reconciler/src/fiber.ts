@@ -1,5 +1,10 @@
 import { Key, Props, ReactElementType, Ref } from 'shared/ReactTypes';
-import { FunctionComponent, HostComponent, WorkTag } from './workTags';
+import {
+	Fragment,
+	FunctionComponent,
+	HostComponent,
+	WorkTag
+} from './workTags';
 import { Flags, NoFlags } from './fiberFlags';
 import { Container } from 'hostConfig';
 
@@ -47,7 +52,7 @@ export class FiberNode {
 	//与 Fiber 节点相关的更新队列。用于存储需要应用到 Fiber 的更新，例如 state 更新。这通常是一个待处理的更新集合。
 	updateQueue: unknown;
 
-	deletions:FiberNode[] | null;
+	deletions: FiberNode[] | null;
 	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		//实例属性
 		this.tag = tag;
@@ -107,7 +112,6 @@ export const createWorkInProgress = (
 		wip = new FiberNode(current.tag, pendingProps, current.key);
 		wip.stateNode = current.stateNode;
 
-		
 		wip.alternate = current;
 		current.alternate = wip;
 	} else {
@@ -138,5 +142,10 @@ export function createFiberFromElement(element: ReactElementType): FiberNode {
 	}
 	const fiber = new FiberNode(fiberTag, props, key);
 	fiber.type = type;
+	return fiber;
+}
+
+export function createFiberFromFragment(elements: any[], key: Key): FiberNode {
+	const fiber = new FiberNode(Fragment, elements, key);
 	return fiber;
 }

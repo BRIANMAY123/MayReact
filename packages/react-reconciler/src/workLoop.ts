@@ -49,10 +49,8 @@ function commitRoot(root: FiberRootNode) {
 	const rootHasEffect = (finishedWork.flags & MutationMask) !== NoFlags;
 
 	if (subtreeHasEffect || rootHasEffect) {
-		
 		commitMutationEffects(finishedWork);
 		root.current = finishedWork; //两棵树的交换
-		
 	} else {
 		root.current = finishedWork;
 	}

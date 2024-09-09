@@ -1,36 +1,32 @@
-import { REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE } from 'shared/ReactSymbols';
-import {
-	ElementType,
-	Key,
-	Props,
-	ReactElementType,
-	Ref,
-	Type
-} from 'shared/ReactTypes';
-
-const ReactElement = function (
-	type: Type,
-	key: Key,
-	ref: Ref,
-	props: Props
-): ReactElementType {
-	const element = {
-		$$typeof: REACT_ELEMENT_TYPE,
-		type,
-		key,
-		ref,
-		props,
+'use strict';
+exports.__esModule = true;
+exports.Fragment =
+	exports.isValidElement =
+	exports.jsxDEV =
+	exports.jsx =
+		void 0;
+var ReactSymbols_1 = require('shared/ReactSymbols');
+var ReactElement = function (type, key, ref, props) {
+	var element = {
+		$$typeof: ReactSymbols_1.REACT_ELEMENT_TYPE,
+		type: type,
+		key: key,
+		ref: ref,
+		props: props,
 		__mark: 'may'
 	};
 	return element;
 };
-
-export const jsx = (type: ElementType, config: any, ...children: any) => {
-	let key: Key = null;
-	const props: Props = {};
-	let ref: Ref = null;
-	for (const prop in config) {
-		const val = config[prop];
+exports.jsx = function (type, config) {
+	var children = [];
+	for (var _i = 2; _i < arguments.length; _i++) {
+		children[_i - 2] = arguments[_i];
+	}
+	var key = null;
+	var props = {};
+	var ref = null;
+	for (var prop in config) {
+		var val = config[prop];
 		if (prop === 'key') {
 			if (val !== undefined) {
 				key = val + ''; //变成字符串
@@ -48,7 +44,7 @@ export const jsx = (type: ElementType, config: any, ...children: any) => {
 			props[prop] = val;
 		}
 	}
-	const childrenLength = children.length;
+	var childrenLength = children.length;
 	if (childrenLength) {
 		//有一个或多个child
 		if (childrenLength === 1) {
@@ -59,14 +55,12 @@ export const jsx = (type: ElementType, config: any, ...children: any) => {
 	}
 	return ReactElement(type, key, ref, props); //为什么不用new？
 };
-
-export const jsxDEV = (type: ElementType, config: any) => {
-	let key: Key = null;
-	const props: Props = {};
-	let ref: Ref = null;
-
-	for (const prop in config) {
-		const val = config[prop];
+exports.jsxDEV = function (type, config) {
+	var key = null;
+	var props = {};
+	var ref = null;
+	for (var prop in config) {
+		var val = config[prop];
 		if (prop === 'key') {
 			if (val !== undefined) {
 				key = val + '';
@@ -84,16 +78,14 @@ export const jsxDEV = (type: ElementType, config: any) => {
 			props[prop] = val;
 		}
 	}
-
 	return ReactElement(type, key, ref, props);
 };
-
-export function isValidElement(object: any) {
+function isValidElement(object) {
 	return (
 		typeof object === 'object' &&
 		object !== null &&
-		object.$$typeof === REACT_ELEMENT_TYPE
+		object.$$typeof === ReactSymbols_1.REACT_ELEMENT_TYPE
 	);
 }
-
-export const Fragment = REACT_FRAGMENT_TYPE;
+exports.isValidElement = isValidElement;
+exports.Fragment = ReactSymbols_1.REACT_FRAGMENT_TYPE;

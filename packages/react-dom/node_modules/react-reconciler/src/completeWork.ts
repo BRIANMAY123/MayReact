@@ -7,6 +7,7 @@ import {
 import { FiberNode } from './fiber';
 import { NoFlags, Update } from './fiberFlags';
 import {
+	Fragment,
 	FunctionComponent,
 	HostComponent,
 	HostRoot,
@@ -14,7 +15,7 @@ import {
 } from './workTags';
 import { updateFiberProps } from 'react-dom/src/SyntheticEvent';
 
-function markUpdate(fiber:FiberNode){
+function markUpdate(fiber: FiberNode) {
 	fiber.flags |= Update;
 }
 
@@ -33,7 +34,7 @@ export const completeWork = (wip: FiberNode) => {
 				updateFiberProps(wip.stateNode, newProps);
 			} else {
 				// const instance = createInstance(wip.type, newProps);
-				const instance = createInstance(wip.type,newProps);
+				const instance = createInstance(wip.type, newProps);
 				// 2. 将DOM插入到DOM树中
 				appendAllChildren(instance, wip);
 				wip.stateNode = instance;
@@ -43,11 +44,10 @@ export const completeWork = (wip: FiberNode) => {
 		case HostText:
 			if (current !== null && wip.stateNode) {
 				// update
-					const oldText = current.memoizedProps?.content;
-				    const newText = newProps.content;
-				    if (oldText !== newText) {
+				const oldText = current.memoizedProps?.content;
+				const newText = newProps.content;
+				if (oldText !== newText) {
 					markUpdate(wip);
-
 				}
 			} else {
 				// 1. 构建DOM
@@ -62,7 +62,9 @@ export const completeWork = (wip: FiberNode) => {
 		case FunctionComponent:
 			bubbleProperties(wip);
 			return null;
-
+		case Fragment:
+			bubbleProperties(wip);
+			return null;
 		default:
 			if (__DEV__) {
 				console.warn('未处理的completeWork情况', wip);
