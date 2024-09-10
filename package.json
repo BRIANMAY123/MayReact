@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts,.jsx,.tsx --fix --quiet ./packages",
     "bulid:dev": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/dev.config.js",
-    "demo":"vite serve demos/test-fc --config scripts/vite/vite.config.js --force"
+    "demo": "vite serve demos/test-fc --config scripts/vite/vite.config.js --force"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +17,12 @@
     "@eslint/js": "^9.1.1",
     "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-commonjs": "^25.0.7",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/scheduler": "^0.23.0",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "commitlint": "^19.3.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
@@ -32,12 +36,10 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.7.1",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-		"vite": "^5.4.1"
+    "vite": "^5.4.1"
   },
   "dependencies": {
-    "@rollup/plugin-replace": "^5.0.5"
+    "@rollup/plugin-replace": "^5.0.5",
+    "scheduler": "^0.23.2"
   }
 }

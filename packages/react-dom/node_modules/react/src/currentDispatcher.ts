@@ -5,6 +5,7 @@ export type Dispatch<State> = (action: Action<State>) => void;
 //Dispatcher为当前使用hooks的集合
 export interface Dispatcher {
 	useState: <T>(initalState: () => T | T) => [T, Dispatch<T>];
+	useEffect:(callback:()=>void|void,deps:any[]|void)=>void
 }
 
 const currentDispatcher: { current: null | Dispatcher } = {

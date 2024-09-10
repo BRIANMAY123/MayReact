@@ -8,6 +8,11 @@ import {
 import { Flags, NoFlags } from './fiberFlags';
 import { Container } from 'hostConfig';
 import { Lane, Lanes, NoLane, NoLanes } from './fiberLanes';
+import { Effect } from './fiberHooks';
+export interface PendingPassiveEffects {
+	unmount: Effect[];
+	update: Effect[];
+}
 
 export class FiberNode {
 	//组件的类型。对于函数组件，它是一个函数；对于类组件，它是一个类；
@@ -87,6 +92,7 @@ export class FiberNode {
 	}
 }
 
+
 //表示一个 Fiber 树的根节点
 export class FiberRootNode {
 	//表示实际的 DOM 容器，如一个 HTML 元素，React 将组件渲染到这个容器中
@@ -97,6 +103,7 @@ export class FiberRootNode {
 
 	pendingLanes: Lanes;
 	finishedLane: Lane;
+	pendingPassiveEffects: PendingPassiveEffects;
 	constructor(container: Container, hostRootFiber: FiberNode) {
 		this.container = container;
 		this.current = hostRootFiber;
@@ -104,6 +111,10 @@ export class FiberRootNode {
 		this.finishedWork = null;
 		this.finishedLane = NoLane;
 		this.pendingLanes = NoLanes;
+		this.pendingPassiveEffects = {
+			unmount: [],
+			update: []
+		};
 	}
 }
 
