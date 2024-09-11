@@ -26,18 +26,21 @@ import { Effect, FCUpdateQueue } from './fiberHooks';
 import { HookHasEffect } from './hookEffectTags';
 
 let nextEffect: FiberNode | null = null;
-export const commitMutationEffects = (finishedWork: FiberNode,root: FiberRootNode) => {
+export const commitMutationEffects = (
+	finishedWork: FiberNode,
+	root: FiberRootNode
+) => {
 	nextEffect = finishedWork;
 	while (nextEffect !== null) {
 		const child: FiberNode | null = nextEffect.child;
 		if (
-			(nextEffect.subtreeFlags & MutationMask | PassiveEffect) !== NoFlags &&
+			((nextEffect.subtreeFlags & MutationMask) | PassiveEffect) !== NoFlags &&
 			child !== null
 		) {
 			nextEffect = child;
 		} else {
 			up: while (nextEffect !== null) {
-				commitMutaitonEffectsOnFiber(nextEffect,root);
+				commitMutaitonEffectsOnFiber(nextEffect, root);
 				const sibling: FiberNode | null = nextEffect.sibling;
 				if (sibling !== null) {
 					nextEffect = sibling;
@@ -49,7 +52,10 @@ export const commitMutationEffects = (finishedWork: FiberNode,root: FiberRootNod
 	}
 };
 
-const commitMutaitonEffectsOnFiber = (finishedWork: FiberNode,root: FiberRootNode) => {
+const commitMutaitonEffectsOnFiber = (
+	finishedWork: FiberNode,
+	root: FiberRootNode
+) => {
 	const flags = finishedWork.flags;
 	// flags placement
 	if ((flags & Placement) !== NoFlags) {
@@ -67,7 +73,7 @@ const commitMutaitonEffectsOnFiber = (finishedWork: FiberNode,root: FiberRootNod
 		const deletions = finishedWork.deletions;
 		if (deletions !== null) {
 			deletions.forEach((childToDelete) => {
-				commitDeletion(childToDelete,root);
+				commitDeletion(childToDelete, root);
 			});
 		}
 		finishedWork.flags &= ~ChildDeletion;
@@ -97,7 +103,7 @@ function recordHostChildrenToDelete(
 		}
 	}
 }
-function commitDeletion(childToDelete: FiberNode,root: FiberRootNode) {
+function commitDeletion(childToDelete: FiberNode, root: FiberRootNode) {
 	const rootChildrenToDelete: FiberNode[] = [];
 	commitNestedComponent(childToDelete, (unmountFiber) => {
 		switch (unmountFiber.tag) {
@@ -262,37 +268,37 @@ function insertOrAppendPlacementNodeIntoContainer(
 function commitPassiveEffect(
 	fiber: FiberNode,
 	root: FiberRootNode,
-	type: keyof PendingPassiveEffects){
-		if (
-			fiber.tag !== FunctionComponent ||
-			(type === 'update' && (fiber.flags & PassiveEffect) === NoFlags)
-		) {
-			return;
-		}
-		const updateQueue = fiber.updateQueue as FCUpdateQueue<any>;
-		if (updateQueue !== null) {
-			if (updateQueue.lastEffect === null && __DEV__) {
-				console.error('当FC存在PassiveEffect flag时，不应该不存在effect');
-			}
-			root.pendingPassiveEffects[type].push(updateQueue.lastEffect as Effect);
-		}
-
-	}
-	function commitHookEffectList(
-		flags: Flags,
-		lastEffect: Effect,
-		callback: (effect: Effect) => void
+	type: keyof PendingPassiveEffects
+) {
+	if (
+		fiber.tag !== FunctionComponent ||
+		(type === 'update' && (fiber.flags & PassiveEffect) === NoFlags)
 	) {
-		//环状列表获取第一个
-		let effect = lastEffect.next as Effect;
-	
-		do {
-			if ((effect.tag & flags) === flags) {
-				callback(effect);
-			}
-			effect = effect.next as Effect;
-		} while (effect !== lastEffect.next);
+		return;
 	}
+	const updateQueue = fiber.updateQueue as FCUpdateQueue<any>;
+	if (updateQueue !== null) {
+		if (updateQueue.lastEffect === null && __DEV__) {
+			console.error('当FC存在PassiveEffect flag时，不应该不存在effect');
+		}
+		root.pendingPassiveEffects[type].push(updateQueue.lastEffect as Effect);
+	}
+}
+function commitHookEffectList(
+	flags: Flags,
+	lastEffect: Effect,
+	callback: (effect: Effect) => void
+) {
+	//环状列表获取第一个
+	let effect = lastEffect.next as Effect;
+
+	do {
+		if ((effect.tag & flags) === flags) {
+			callback(effect);
+		}
+		effect = effect.next as Effect;
+	} while (effect !== lastEffect.next);
+}
 export function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
 	commitHookEffectList(flags, lastEffect, (effect) => {
 		const destroy = effect.destroy;

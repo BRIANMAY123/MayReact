@@ -1,4 +1,3 @@
-
 import { Dispatch } from 'react/src/currentDispatcher';
 import { Dispatcher } from 'react/src/currentDispatcher';
 import internals from 'shared/internals';
@@ -17,7 +16,6 @@ import { Flags, PassiveEffect } from './fiberFlags';
 import { useEffect } from 'react';
 import { HookHasEffect, Passive } from './hookEffectTags';
 
-
 let currentlyRenderingFiber: FiberNode | null = null;
 let workInProgressHook: Hook | null = null;
 let currentHook: Hook | null = null;
@@ -33,17 +31,17 @@ interface Hook {
 //effect类型的一些type
 type EffectCallback = () => void;
 type EffectDeps = any[] | null;
-export interface Effect{
+export interface Effect {
 	//标记什么类型的effect
-	tag:Flags
+	tag: Flags;
 	create: EffectCallback | void;
 	destroy: EffectCallback | void;
 	deps: EffectDeps;
 	next: Effect | null;
 }
 
-export interface FCUpdateQueue<State> extends UpdateQueue<State>{
-	lastEffect:Effect|null;
+export interface FCUpdateQueue<State> extends UpdateQueue<State> {
+	lastEffect: Effect | null;
 }
 
 export function renderWithHooks(wip: FiberNode, lane: Lane) {
@@ -53,7 +51,7 @@ export function renderWithHooks(wip: FiberNode, lane: Lane) {
 	wip.memoizedState = null;
 	renderLane = lane;
 	//重置effect链表,很重要
-	wip.updateQueue=null
+	wip.updateQueue = null;
 
 	const current = wip.alternate;
 
@@ -211,35 +209,32 @@ function mountWorkInProgresHook(): Hook {
 	return workInProgressHook;
 }
 
-
-
-function  mountEffect(create:EffectCallback|void,deps:EffectDeps|void){
-	const hook=mountWorkInProgresHook();
+function mountEffect(create: EffectCallback | void, deps: EffectDeps | void) {
+	const hook = mountWorkInProgresHook();
 	const nextDeps = deps === undefined ? null : deps;
-	(currentlyRenderingFiber as FiberNode).flags|=PassiveEffect
+	(currentlyRenderingFiber as FiberNode).flags |= PassiveEffect;
 
-	hook.memoizedState=pushEffect(
+	hook.memoizedState = pushEffect(
 		Passive | HookHasEffect,
 		create,
 		undefined,
 		nextDeps
-	)
-
+	);
 }
 
-function updateEffect(create: EffectCallback | void, deps: EffectDeps | void){
+function updateEffect(create: EffectCallback | void, deps: EffectDeps | void) {
 	const hook = updateWorkInProgresHook();
 	const nextDeps = deps === undefined ? null : deps;
-	let destroy:EffectCallback | void;
+	let destroy: EffectCallback | void;
 
-	if(currentHook!==null){
-		const prevEffect=currentHook.memoizedState as Effect;
-		destroy=prevEffect.destroy;
+	if (currentHook !== null) {
+		const prevEffect = currentHook.memoizedState as Effect;
+		destroy = prevEffect.destroy;
 
-		if(nextDeps!==null){
+		if (nextDeps !== null) {
 			// 浅比较依赖
 			const prevDeps = prevEffect.deps;
-			if(areHookInputsEqual(nextDeps, prevDeps)){
+			if (areHookInputsEqual(nextDeps, prevDeps)) {
 				hook.memoizedState = pushEffect(Passive, create, destroy, nextDeps);
 				return;
 			}
@@ -252,27 +247,30 @@ function updateEffect(create: EffectCallback | void, deps: EffectDeps | void){
 			nextDeps
 		);
 	}
-	
-
 }
 
-function pushEffect(hookFlags:Flags,create:EffectCallback|void,destroy:EffectCallback|void,deps:EffectDeps):Effect{
-	const effect:Effect={
+function pushEffect(
+	hookFlags: Flags,
+	create: EffectCallback | void,
+	destroy: EffectCallback | void,
+	deps: EffectDeps
+): Effect {
+	const effect: Effect = {
 		tag: hookFlags,
 		create,
 		destroy,
 		deps,
 		next: null
-	}
-	const fiber=currentlyRenderingFiber as FiberNode;
+	};
+	const fiber = currentlyRenderingFiber as FiberNode;
 	const updateQueue = fiber.updateQueue as FCUpdateQueue<any>;
-	if(updateQueue===null){
-		const updateQueue=createFCUpdateQueue();
-		fiber.updateQueue=updateQueue;
+	if (updateQueue === null) {
+		const updateQueue = createFCUpdateQueue();
+		fiber.updateQueue = updateQueue;
 		//effect自己单人成环，与updatequeue中类似
-		effect.next=effect;
-		updateQueue.lastEffect=effect
-	}else{
+		effect.next = effect;
+		updateQueue.lastEffect = effect;
+	} else {
 		// 插入effect
 		const lastEffect = updateQueue.lastEffect;
 		if (lastEffect === null) {
@@ -285,10 +283,10 @@ function pushEffect(hookFlags:Flags,create:EffectCallback|void,destroy:EffectCal
 			updateQueue.lastEffect = effect;
 		}
 	}
-   return effect
+	return effect;
 }
 
-function createFCUpdateQueue<State>(){
+function createFCUpdateQueue<State>() {
 	const updateQueue = createUpdateQueue<State>() as FCUpdateQueue<State>;
 	updateQueue.lastEffect = null;
 	return updateQueue;

@@ -9,6 +9,7 @@ import { Flags, NoFlags } from './fiberFlags';
 import { Container } from 'hostConfig';
 import { Lane, Lanes, NoLane, NoLanes } from './fiberLanes';
 import { Effect } from './fiberHooks';
+import { CallbackNode } from 'scheduler';
 export interface PendingPassiveEffects {
 	unmount: Effect[];
 	update: Effect[];
@@ -92,7 +93,6 @@ export class FiberNode {
 	}
 }
 
-
 //表示一个 Fiber 树的根节点
 export class FiberRootNode {
 	//表示实际的 DOM 容器，如一个 HTML 元素，React 将组件渲染到这个容器中
@@ -103,6 +103,9 @@ export class FiberRootNode {
 
 	pendingLanes: Lanes;
 	finishedLane: Lane;
+
+	callbackNode: CallbackNode | null;
+	callbackPriority: Lane;
 	pendingPassiveEffects: PendingPassiveEffects;
 	constructor(container: Container, hostRootFiber: FiberNode) {
 		this.container = container;
@@ -111,6 +114,8 @@ export class FiberRootNode {
 		this.finishedWork = null;
 		this.finishedLane = NoLane;
 		this.pendingLanes = NoLanes;
+		this.callbackNode = null;
+		this.callbackPriority = NoLane;
 		this.pendingPassiveEffects = {
 			unmount: [],
 			update: []
