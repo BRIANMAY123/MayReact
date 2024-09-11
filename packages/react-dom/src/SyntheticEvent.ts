@@ -1,5 +1,10 @@
 import { Container } from 'hostConfig';
-import { unstable_ImmediatePriority, unstable_NormalPriority, unstable_runWithPriority, unstable_UserBlockingPriority } from 'scheduler';
+import {
+	unstable_ImmediatePriority,
+	unstable_NormalPriority,
+	unstable_runWithPriority,
+	unstable_UserBlockingPriority
+} from 'scheduler';
 import { Props } from 'shared/ReactTypes';
 
 export const elementPropsKey = '__props';
@@ -83,7 +88,7 @@ function triggerEventFlow(paths: EventCallback[], se: SyntheticEvent) {
 		const callback = paths[i];
 		unstable_runWithPriority(eventTypeToSchdulerPriority(se.type), () => {
 			callback.call(null, se);
-		})
+		});
 
 		if (se.__stopPropagation) {
 			break;
