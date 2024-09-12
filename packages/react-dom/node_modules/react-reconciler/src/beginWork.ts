@@ -11,6 +11,7 @@ import {
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
 import { renderWithHooks } from './fiberHooks';
 import { Lane } from './fiberLanes';
+import { Ref } from './fiberFlags';
 
 export const beginWork = (wip: FiberNode, renderLane: Lane) => {
 	switch (wip.tag) {
@@ -51,6 +52,7 @@ function updateHostComponent(wip: FiberNode) {
 	//<div><span/></div> span在div的props的children
 	const nextProps = wip.pendingProps;
 	const nextChildren = nextProps.children;
+	markRef(wip.alternate, wip);
 	reconcileChildren(wip, nextChildren);
 	return wip.child;
 }
@@ -77,3 +79,14 @@ function reconcileChildren(wip: FiberNode, children?: ReactElementType) {
 	}
 }
 //性能优化，构建离屏dom树，childFibers，针对mount流程
+
+function markRef(current: FiberNode | null, workInProgress: FiberNode) {
+	const ref = workInProgress.ref;
+
+	if (
+		(current === null && ref !== null) ||
+		(current !== null && current.ref !== ref)
+	) {
+		workInProgress.flags |= Ref;
+	}
+}

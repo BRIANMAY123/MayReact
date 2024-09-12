@@ -17,7 +17,6 @@ import { Lane, NoLane, requestUpdateLane } from './fiberLanes';
 import { Flags, PassiveEffect } from './fiberFlags';
 import { HookHasEffect, Passive } from './hookEffectTags';
 
-
 let currentlyRenderingFiber: FiberNode | null = null;
 let workInProgressHook: Hook | null = null;
 let currentHook: Hook | null = null;
@@ -83,14 +82,15 @@ export function renderWithHooks(wip: FiberNode, lane: Lane) {
 const HooksDispatcherOnMount: Dispatcher = {
 	useState: mountState,
 	useEffect: mountEffect,
-	useTransition: mountTransition
-	
+	useTransition: mountTransition,
+	useRef: mountRef
 };
 
 const HooksDispatcherOnUpdate: Dispatcher = {
 	useState: updateState,
 	useEffect: updateEffect,
-	useTransition: updateTransition
+	useTransition: updateTransition,
+	useRef: updateRef
 };
 
 function updateState<State>(): [State, Dispatch<State>] {
@@ -204,7 +204,7 @@ function mountState<State>(
 	const queue = createUpdateQueue<State>();
 	hook.updateQueue = queue;
 	hook.memoizedState = memoizedState;
-	hook.baseState=memoizedState
+	hook.baseState = memoizedState;
 
 	// @ts-ignore
 	const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue);
@@ -247,6 +247,7 @@ function mountWorkInProgresHook(): Hook {
 	return workInProgressHook;
 }
 
+//effect
 function mountEffect(create: EffectCallback | void, deps: EffectDeps | void) {
 	const hook = mountWorkInProgresHook();
 	const nextDeps = deps === undefined ? null : deps;
@@ -343,12 +344,13 @@ function areHookInputsEqual(nextDeps: EffectDeps, prevDeps: EffectDeps) {
 	return true;
 }
 
-function mountTransition(): [boolean, (callback: () => void) => void]{
-	const [isPending,setPending]=mountState(false);
+//transition
+function mountTransition(): [boolean, (callback: () => void) => void] {
+	const [isPending, setPending] = mountState(false);
 	const hook = mountWorkInProgresHook();
-	const start=startTransition.bind(null,setPending)
+	const start = startTransition.bind(null, setPending);
 	hook.memoizedState = start;
-	return [isPending,start]
+	return [isPending, start];
 }
 
 function updateTransition(): [boolean, (callback: () => void) => void] {
@@ -357,13 +359,25 @@ function updateTransition(): [boolean, (callback: () => void) => void] {
 	const start = hook.memoizedState;
 	return [isPending as boolean, start];
 }
-function startTransition(setPending: Dispatch<boolean>, callback: () => void){
+function startTransition(setPending: Dispatch<boolean>, callback: () => void) {
 	setPending(true);
-	const prevTransition =currentBatchConfig.transition;
+	const prevTransition = currentBatchConfig.transition;
 	currentBatchConfig.transition = 1;
 
 	callback();
 	setPending(false);
 
 	currentBatchConfig.transition = prevTransition;
+}
+
+//ref
+function mountRef<T>(initialState: T): { current: T } {
+	const hook = mountWorkInProgresHook();
+	const ref = { current: initialState };
+	hook.memoizedState = ref;
+	return ref;
+}
+function updateRef<T>(initialValue: T): { current: T } {
+	const hook = updateWorkInProgresHook();
+	return hook.memoizedState;
 }

@@ -7,6 +7,7 @@ export interface Dispatcher {
 	useState: <T>(initalState: () => T | T) => [T, Dispatch<T>];
 	useEffect: (callback: () => void | void, deps: any[] | void) => void;
 	useTransition: () => [boolean, (callback: () => void) => void];
+	useRef: <T>(initialValue: T) => { current: T };
 }
 
 const currentDispatcher: { current: null | Dispatcher } = {

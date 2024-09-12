@@ -4,6 +4,7 @@ import {
 	commitHookEffectListCreate,
 	commitHookEffectListDestroy,
 	commitHookEffectListUnmount,
+	commitLayoutEffects,
 	commitMutationEffects
 } from './commitWork';
 import { completeWork } from './completeWork';
@@ -13,7 +14,7 @@ import {
 	PendingPassiveEffects,
 	createWorkInProgress
 } from './fiber';
-import { MutationMask, NoFlags, PassiveMask } from './fiberFlags';
+import { MutationMask, NoFlags, PassiveMask, Ref } from './fiberFlags';
 import {
 	getHighestPriorityLane,
 	Lane,
@@ -194,6 +195,9 @@ function commitRoot(root: FiberRootNode) {
 	if (subtreeHasEffect || rootHasEffect) {
 		commitMutationEffects(finishedWork, root);
 		root.current = finishedWork; //两棵树的交换
+
+		// 阶段3/3:Layout
+		commitLayoutEffects(finishedWork, root);
 	} else {
 		root.current = finishedWork;
 	}
